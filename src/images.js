@@ -102,6 +102,7 @@ import trueusd from "./assets/trueusd.png"
 import nxm from "./assets/nxm.png"
 import harmony from "./assets/harmony.png"
 import origintrail from "./assets/origintail.png"
+import celo from "./assets/celo.png"
 export const images = {
     origintrail,
     harmony,
@@ -113,6 +114,7 @@ export const images = {
     thetafuel,
     enjincoin,
     holo,
+    celo,
 dexe,
     dash,
     sushiswap,
