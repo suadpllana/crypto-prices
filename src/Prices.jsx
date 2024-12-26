@@ -8,6 +8,7 @@ import { TiDelete } from "react-icons/ti";
 
 const Prices = () => {
   const [cryptoData, setCryptoData] = useState([]);
+  const [storedData , setStoredData] = useState([])
   const [watchlist, setWatchlist] = useState(() => {
     const bitcoinData = localStorage.getItem("bitcoinData")
     return bitcoinData ? JSON.parse(bitcoinData) : []
@@ -25,21 +26,24 @@ const Prices = () => {
       const data = await response.json();
 
       setCryptoData(data.data);
+      setStoredData(data.data)
     } catch (err) {
       console.error(err);
     }
   }
 
   useEffect(() => {
+  
     fetchData();
   }, []);
 
   function handleChange(name) {
-    const filteredCryptos = cryptoData.filter((crypto) =>
+  
+    const filteredCryptos = storedData.filter((crypto) =>
       crypto.name.toLowerCase().includes(name)
     );
     setCryptoData(filteredCryptos);
-
+    console.log(filteredCryptos)
     if (name === "") {
       fetchData();
     }
