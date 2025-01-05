@@ -43,7 +43,7 @@ const Prices = () => {
       crypto.name.toLowerCase().includes(name)
     );
     setCryptoData(filteredCryptos);
-    console.log(filteredCryptos)
+
     if (name === "") {
       fetchData();
     }
