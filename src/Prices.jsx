@@ -1,12 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { images } from "./images";
+
 import { IoIosArrowDropdown } from "react-icons/io";
 import { IoIosArrowDropup } from "react-icons/io";
 import { TiDelete } from "react-icons/ti";
+import {useNavigate} from "react-router-dom"
 
-
-const Prices = () => {
+const Prices = ({setFilteredCrypto , setId}) => {
   const [cryptoData, setCryptoData] = useState([]);
   const [storedData , setStoredData] = useState([])
   const [watchlist, setWatchlist] = useState(() => {
@@ -19,36 +19,37 @@ const Prices = () => {
 
 
   const [openWatchlist, setOpenWatchlist] = useState(false);
+
+  const navigate = useNavigate();
+
   async function fetchData() {
     try {
-      const url = "https://api.coincap.io/v2/assets/";
-      const response = await fetch(url);
-      const data = await response.json();
-
-      setCryptoData(data.data);
-      setStoredData(data.data)
+      const options = {
+        method: 'GET',
+        headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-DxNWbMiJ9vwHu5TMtcqoJdQH'}
+      };
+      
+      const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd', options)
+      const data = await response.json()
+        
+        setCryptoData(data)
+        setStoredData(data)
+      
     } catch (err) {
       console.error(err);
     }
   }
 
+ 
   useEffect(() => {
   
     fetchData();
   }, []);
 
-  function handleChange(name) {
-  
-    const filteredCryptos = storedData.filter((crypto) =>
-      crypto.name.toLowerCase().includes(name)
-    );
-    setCryptoData(filteredCryptos);
 
-    if (name === "") {
-      fetchData();
-    }
-  }
-  function addToWatchlist(name, price, image) {
+  function addToWatchlist(e, name, price, image) {
+    e.stopPropagation()
+    console.log(price)
     setWatchlist((prev) => {
       if (!prev.some((item) => item.cryptoName === name)) {
         return [
@@ -66,10 +67,22 @@ const Prices = () => {
     });
   }
 
-  function deleteCrypto(id) {
-    const filteredCrypto = watchlist.filter((crypto) => crypto.id !== id);
-    setWatchlist(filteredCrypto);
-  }
+function handleChange(cryptoName){
+  const filteredCrypto = storedData.filter(crypto => crypto.name.trim().toLowerCase().includes(cryptoName.trim().toLowerCase()));
+  setCryptoData(filteredCrypto)
+}
+function deleteCrypto(id){
+  const filteredWatchlist = watchlist.filter(crypto => crypto.id !== id);
+  setWatchlist(filteredWatchlist)
+}
+
+
+function getCryptoById(id){
+  const filteredCrypto = cryptoData.filter(crypto => crypto.id === id);
+  setFilteredCrypto(filteredCrypto);
+  setId(id)
+  navigate(`/crypto-prices/prices/${id}`)
+}
 
   return (
     <div>
@@ -79,64 +92,40 @@ const Prices = () => {
       className="search-crypto-input"
         type="text"
         placeholder="Search crypto"
-        onChange={(e) => handleChange((e.target.value).toLowerCase())}
+        onChange={(e) => handleChange(e.target.value)}
       />
 
       <div className="container">
-        {cryptoData.length > 0 ? (
+        <div className="specialDiv">
+          <p>#</p>
+          <p>Coins</p>
+          <p>Price</p>
+          <p>24H change</p>
+          <p>Market Cap</p>
+          <p>Watchlist</p>
+        </div>
+        <hr style={{ borderColor: 'black', borderWidth: '2px',margin: "0px" }} />
+        {cryptoData.map((crypto, index) => (
           <>
-            {cryptoData.map((crypto, index) => (
-              <div key={crypto.name}>
-                <h2>
-                  <img
-                    className="logo"
-                    src={
-                      images[
-                        crypto.id.replace(/-/g, "").replace(/1|0/g, (match) => {
-                          return match === "1" ? "one" : "zero";
-                        })
-                      ]
-                    }
-                  />
+              <div key={index} onClick={() => getCryptoById(crypto.id)}>
+          <p>{crypto.market_cap_rank}</p>
+          <p> <img src={crypto.image} alt="" />{crypto.name}</p>
+          <p>$ {crypto.current_price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 5 })}</p>
 
-                  {crypto.name}
-                </h2>
-                <p>
-                  $
-                  {parseFloat(crypto.priceUsd).toFixed(2) != 0.0
-                    ? parseFloat(crypto.priceUsd).toFixed(2)
-                    : parseFloat(crypto.priceUsd).toFixed(5)}
-                </p>
-                <button
-                  className="watchlist-button"
-                  onClick={() =>
-                    addToWatchlist(
-                      crypto.name,
-                      crypto.priceUsd,
-                      images[
-                        crypto.id.replace(/-/g, "").replace(/1|0/g, (match) => {
-                          return match === "1" ? "one" : "zero";
-                        })
-                      ]
-                    )
-                  }
-                >
-                  Add to watchlist
-                </button>
-              </div>
-            ))}
+          <p className={crypto.price_change_24h > 0 ? "green" : "red"}>{crypto.price_change_24h.toFixed(2) == "0.00" || crypto.price_change_24h.toFixed(2) == -0.00 ? crypto.price_change_24h.toFixed(6) :  crypto.price_change_24h.toFixed(2).toLocaleString()}</p>
+          <p>$ {crypto.market_cap.toLocaleString()}</p>
+          <button onClick={(e) => addToWatchlist(e, crypto.name , crypto.current_price.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 5 }) , crypto.image)}>Add to watchlist</button>
+          </div>
+          <hr style={{ borderColor: 'black', borderWidth: '2px',margin: "0px" }} />
+
           </>
-        ) : (
-          <>
-            <h1></h1>
-            <h2>Crypto not found</h2>
-          </>
-        )}
+      
+        ))}
       </div>
 
       <div className={openWatchlist ? "watchlist open" : "watchlist"}>
         <p className="icon">
-          Show watchlist{" "}
+          {!openWatchlist ? "Show" : "Close"} watchlist{" "}
           {openWatchlist ? (
             <IoIosArrowDropup
               onClick={() => setOpenWatchlist((prev) => !prev)}
@@ -148,13 +137,11 @@ const Prices = () => {
           )}
         </p>
         {watchlist.length > 0 ? (
-          watchlist.map((item) => (
-            <p key={item.price}>
+          watchlist.map((item, index) => (
+            <p key={index}>
               {" "}
               <img className="logo" src={item.logo} alt="" />
-              {item.cryptoName} - ${parseFloat(item.price).toFixed(2) != 0.0
-                    ? parseFloat(item.price).toFixed(2)
-                    : parseFloat(item.price).toFixed(5)}{" "}
+              {item.cryptoName} - ${item.price}
               <TiDelete onClick={() => deleteCrypto(item.id)} />
             </p>
           ))

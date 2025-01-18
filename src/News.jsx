@@ -2,9 +2,10 @@ import React from "react";
 import {useState , useEffect} from "react"
 const News = () => {
   const [news, setNews] = useState([]);
+  const [ newsCount ,setNewsCount] = useState(10)
 
   async function fetchNews() {
-    const url = "https://crypto-news16.p.rapidapi.com/news/top/5";
+    const url = `https://crypto-news16.p.rapidapi.com/news/top/${newsCount}`;
     const options = {
       method: "GET",
       headers: {
@@ -16,15 +17,16 @@ const News = () => {
     try {
       const response = await fetch(url, options);
       const result = await response.json();
-      console.log(result);
+   
       setNews(result)
     } catch (error) {
       console.error(error);
     }
   }
   useEffect(() => {
+   
     fetchNews()
-  } , [])
+  } , [newsCount])
 
   return (
     <>
@@ -43,7 +45,9 @@ const News = () => {
            
         </div>
       )) }
+    
     </div>
+    <button className="news-count" onClick={() => setNewsCount((prev) => prev + 10)}>Show more</button>
     </>
     
   );
