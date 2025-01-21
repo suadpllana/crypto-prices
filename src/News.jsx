@@ -9,7 +9,7 @@ const News = () => {
     const options = {
       method: "GET",
       headers: {
-        "x-rapidapi-key": "5746b3ee16msh8ad6ef3a1df473fp1850acjsn64a08673d84a",
+        "x-rapidapi-key": import.meta.env.VITE_API_KEY2,
         "x-rapidapi-host": "crypto-news16.p.rapidapi.com",
       },
     };

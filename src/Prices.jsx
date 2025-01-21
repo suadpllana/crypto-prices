@@ -26,7 +26,7 @@ const Prices = ({setFilteredCrypto , setId}) => {
     try {
       const options = {
         method: 'GET',
-        headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-DxNWbMiJ9vwHu5TMtcqoJdQH'}
+        headers: {accept: 'application/json', 'x-cg-demo-api-key': import.meta.env.VITE_API_KEY}
       };
       
       const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd', options)
@@ -105,7 +105,7 @@ function getCryptoById(id){
           <p>Watchlist</p>
         </div>
         <hr style={{ borderColor: 'black', borderWidth: '2px',margin: "0px" }} />
-        {cryptoData.map((crypto, index) => (
+        {cryptoData.length > 0 ? cryptoData.map((crypto, index) => (
           <>
               <div key={index} onClick={() => getCryptoById(crypto.id)}>
           <p>{crypto.market_cap_rank}</p>
@@ -120,7 +120,7 @@ function getCryptoById(id){
 
           </>
       
-        ))}
+        )) : <p>Crypto not found</p>}
       </div>
 
       <div className={openWatchlist ? "watchlist open" : "watchlist"}>

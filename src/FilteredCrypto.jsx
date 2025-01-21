@@ -12,7 +12,7 @@ const FilteredCrypto = ({ id , filteredCrypto}) => {
         try {
             const options = {
                 method: 'GET',
-                headers: {accept: 'application/json', 'x-cg-demo-api-key': 'CG-DxNWbMiJ9vwHu5TMtcqoJdQH'}
+                headers: {accept: 'application/json', 'x-cg-demo-api-key': import.meta.env.VITE_API_KEY}
               };
             const priceResponse = await fetch(
                 `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=30&interval=daily`,
