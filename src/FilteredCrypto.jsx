@@ -71,9 +71,9 @@ const FilteredCrypto = ({ id , filteredCrypto}) => {
                   
                     <p>Market Cap Change (24h): <span>${filteredCrypto[0].market_cap_change_24h.toLocaleString()}</span></p>
                     <hr />
-                    <p>24 Hour High: <span>${filteredCrypto[0].high_24h.toLocaleString()}</span></p>
+                    <p>24 Hour High: <span>${filteredCrypto[0].high_24h.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 5 })}</span></p>
                     <hr />
-                    <p>24 Hour Low: <span>${filteredCrypto[0].low_24h.toLocaleString()}</span></p>
+                    <p>24 Hour Low: <span>${filteredCrypto[0].low_24h.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 5 })}</span></p>
                     <hr />
                     </div> }
                  

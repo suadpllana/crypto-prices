@@ -22,29 +22,44 @@ const Prices = ({setFilteredCrypto , setId}) => {
 
   const navigate = useNavigate();
 
-  async function fetchData() {
-    try {
-      const options = {
-        method: 'GET',
-        headers: {accept: 'application/json', 'x-cg-demo-api-key': import.meta.env.VITE_API_KEY}
-      };
-      
-      const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd', options)
-      const data = await response.json()
-        
-        setCryptoData(data)
-        setStoredData(data)
-      
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
- 
   useEffect(() => {
+    async function fetchDataAndUpdateWatchlist() {
+      try {
+        const options = {
+          method: 'GET',
+          headers: { accept: 'application/json', 'x-cg-demo-api-key': import.meta.env.VITE_API_KEY },
+        };
   
-    fetchData();
+        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd', options);
+        const data = await response.json();
+  
+        setCryptoData(data);
+        setStoredData(data);
+  
+    
+        setWatchlist((prevWatchlist) => {
+          return prevWatchlist.map((watchlistItem) => {
+            const updatedCrypto = data.find((crypto) => crypto.name === watchlistItem.cryptoName);
+            if (updatedCrypto) {
+              return {
+                ...watchlistItem,
+                price: updatedCrypto.current_price.toLocaleString(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 5,
+                }),
+              };
+            }
+            return watchlistItem;
+          });
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  
+    fetchDataAndUpdateWatchlist();
   }, []);
+  
 
 
   function addToWatchlist(e, name, price, image) {
